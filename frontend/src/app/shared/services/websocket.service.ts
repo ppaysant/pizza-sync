@@ -25,9 +25,10 @@ export class WebsocketService {
     this.socket = connect(environment.urlBackend);
 
     // TODO(SPLIT_SOCKET) : Instead of handling every socket from here, we should handle them from separate services
-    this.socket.on('CONNECT_USER_SUCCESS', user =>
-      this.connectUserSuccess(user)
-    );
+    this.socket.on('CONNECT_USER_SUCCESS', user => {
+      console.log(`CONNECT_USER_SUCCESS`);
+      this.connectUserSuccess(user);
+    });
     this.socket.on('ADD_ORDER_SUCCESS', order => this.onAddOrderSuccess(order));
     this.socket.on('REMOVE_ORDER_SUCCESS', orderId =>
       this.onRemoveOrderSuccess(orderId)
@@ -37,8 +38,10 @@ export class WebsocketService {
     );
     this.socket.on(
       'SET_COUNTDOWN',
-      ({ hour, minute }: { hour: number; minute: number }) =>
-        this.onSetCountdown(hour, minute)
+      ({ hour, minute }: { hour: number; minute: number }) => {
+        console.log(`SET_COUNTDOWN`, hour, minute);
+        this.onSetCountdown(hour, minute);
+      }
     );
   }
 

@@ -1,3 +1,8 @@
+import { INormalizedInformation } from './pizzas-providers.interface';
+import { PizzasService } from './../pizzas/pizzas.component';
+import { PizzasCategoriesService } from './../pizzas-categories/pizzas-categories.component';
+import { IngredientsService } from './../ingredients/ingredients.component';
+
 export abstract class PizzasProvider {
   /**
    * used to display in lists
@@ -9,15 +14,33 @@ export abstract class PizzasProvider {
    */
   abstract shortCompanyName: string;
 
+  protected abstract phone: string;
+  protected abstract url: string;
+  protected abstract imgsFolder: string;
+
+  protected normalizedInformation: INormalizedInformation;
+
+  constructor(
+    protected pizzasService: PizzasService,
+    protected pizzasCategoriesService: PizzasCategoriesService,
+    protected ingredientsService: IngredientsService
+  ) {}
+
   // this should be the first method to call on a pizza provider
   // it'll try to fetch and parse all the required data and then
   // will give us an access to synchronous data on a pizza provider
   abstract fetchParseAndUpdate(): Promise<PizzasProvider>;
 
-  abstract getCompleteAndNormalizedInformation(): {
-    pizzeria: { name: string; phone: string; url: string };
-    pizzas: any[];
-    pizzasCategories: any[];
-    ingredients: any[];
-  };
+  getCompleteAndNormalizedInformation(): INormalizedInformation {
+    return {
+      pizzeria: {
+        name: this.longCompanyName,
+        phone: this.phone,
+        url: this.url,
+      },
+      pizzas: this.pizzasService.getNormalizedData(),
+      pizzasCategories: this.pizzasCategoriesService.getNormalizedData(),
+      ingredients: this.ingredientsService.getNormalizedData(),
+    };
+  }
 }
