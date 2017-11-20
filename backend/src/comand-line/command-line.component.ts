@@ -1,7 +1,7 @@
 import * as _vorpal from 'vorpal';
 
-import { PizzasProvidersService } from '../pizzas-providers/pizzas-providers.component';
-import { PizzasProvidersModule } from '../pizzas-providers/pizzas-providers.module';
+import { PizzasProvidersService } from '../features/pizzas-providers/pizzas-providers.component';
+import { PizzasProvidersModule } from '../features/pizzas-providers/pizzas-providers.module';
 
 export class CommandLineService {
   private vorpal = _vorpal();

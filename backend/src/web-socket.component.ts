@@ -7,9 +7,9 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 
-import { UsersService } from './users/users.component';
-import { OrdersService } from './orders/orders.component';
-import { IOrderWithoutId } from './orders/orders.interface';
+import { UsersService } from './features/models/users/users.component';
+import { OrdersService } from './features/models/orders/orders.component';
+import { IOrderWithoutId } from './features/models/orders/orders.interface';
 
 @WebSocketGateway()
 export class WebSocketService

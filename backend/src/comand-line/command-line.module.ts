@@ -1,8 +1,8 @@
 import { Module, Inject } from '@nestjs/common';
 
 import { CommandLineService } from './command-line.component';
-import { PizzasProvidersModule } from '../pizzas-providers/pizzas-providers.module';
-import { PizzasProvidersService } from '../pizzas-providers/pizzas-providers.component';
+import { PizzasProvidersModule } from '../features/pizzas-providers/pizzas-providers.module';
+import { PizzasProvidersService } from '../features/pizzas-providers/pizzas-providers.component';
 
 // before creating the `CommandLineService` we need to wait
 // for the default pizza provider to be set

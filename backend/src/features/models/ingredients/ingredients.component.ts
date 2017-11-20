@@ -5,7 +5,7 @@ import {
   IIngredientWithId,
   IIngredientWithoutId,
 } from './ingredients.interface';
-import { cleanIngredientName } from '../helpers/string.helper';
+import { cleanIngredientName } from '../../../helpers/string.helper';
 
 @Component()
 export class IngredientsService extends NormalizedModel<IIngredientWithoutId> {

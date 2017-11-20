@@ -2,7 +2,7 @@ import { Component } from '@nestjs/common';
 import { get } from 'request';
 
 import { NormalizedModel } from '../normalized-model.class';
-import { requestOptions } from '../helpers/http.helper';
+import { requestOptions } from '../../../helpers/http.helper';
 import { IUserWithId, IUserWithoutId } from './users.interface';
 
 @Component()

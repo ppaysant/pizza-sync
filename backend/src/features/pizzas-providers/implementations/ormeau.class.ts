@@ -4,10 +4,10 @@ import { v4 as uuid } from 'uuid';
 import * as cheerio from 'cheerio';
 
 import { PizzasProvider } from '../pizzas-provider.class';
-import { requestOptions } from '../../helpers/http.helper';
-import { IngredientsService } from '../../ingredients/ingredients.component';
-import { getPathImgPizza } from '../../helpers/file.helper';
-import { normalizeArray } from '../../helpers/normalize.helper';
+import { requestOptions } from '../../../helpers/http.helper';
+import { IngredientsService } from '../../models/ingredients/ingredients.component';
+import { getPathImgPizza } from '../../../helpers/file.helper';
+import { normalizeArray } from '../../../helpers/normalize.helper';
 
 export class OrmeauProvider extends PizzasProvider {
   readonly longCompanyName = `L'Ormeau`;
@@ -17,7 +17,7 @@ export class OrmeauProvider extends PizzasProvider {
   protected url = 'http://www.pizzadelormeau.com/nos-pizzas/';
   protected imgsFolder = `${
     __dirname
-  }/../../../../frontend/src/assets/img/pizzas-providers/l-ormeau`;
+  }/../../../../../frontend/src/assets/img/pizzas-providers/l-ormeau`;
 
   private pizzas: any;
   private pizzasCategories: any;

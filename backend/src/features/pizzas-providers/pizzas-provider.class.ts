@@ -1,7 +1,7 @@
 import { INormalizedInformation } from './pizzas-providers.interface';
-import { PizzasService } from './../pizzas/pizzas.component';
-import { PizzasCategoriesService } from './../pizzas-categories/pizzas-categories.component';
-import { IngredientsService } from './../ingredients/ingredients.component';
+import { PizzasService } from '../models/pizzas/pizzas.component';
+import { PizzasCategoriesService } from '../models/pizzas-categories/pizzas-categories.component';
+import { IngredientsService } from '../models/ingredients/ingredients.component';
 
 export abstract class PizzasProvider {
   /**

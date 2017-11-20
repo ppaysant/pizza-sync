@@ -2,9 +2,9 @@ import { Component } from '@nestjs/common';
 
 import { PizzasProvider } from './pizzas-provider.class';
 import { OrmeauProvider } from './implementations/ormeau.class';
-import { PizzasService } from '../pizzas/pizzas.component';
-import { PizzasCategoriesService } from '../pizzas-categories/pizzas-categories.component';
-import { IngredientsService } from '../ingredients/ingredients.component';
+import { PizzasService } from '../models/pizzas/pizzas.component';
+import { PizzasCategoriesService } from '../models/pizzas-categories/pizzas-categories.component';
+import { IngredientsService } from '../models/ingredients/ingredients.component';
 
 @Component()
 export class PizzasProvidersService {

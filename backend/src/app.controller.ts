@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { PizzasProvidersService } from './pizzas-providers/pizzas-providers.component';
-import { UsersService } from './users/users.component';
-import { OrdersService } from './orders/orders.component';
+import { PizzasProvidersService } from './features/pizzas-providers/pizzas-providers.component';
+import { UsersService } from './features/models/users/users.component';
+import { OrdersService } from './features/models/orders/orders.component';
 
 @Controller()
 export class AppController {

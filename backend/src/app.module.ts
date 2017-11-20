@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 
 import { AppController } from './app.controller';
-import { PizzasProvidersModule } from './pizzas-providers/pizzas-providers.module';
+import { PizzasProvidersModule } from './features/pizzas-providers/pizzas-providers.module';
 import { CommandLineModule } from './comand-line/command-line.module';
-import { IngredientsModule } from './ingredients/ingredients.module';
-import { OrdersModule } from './orders/orders.module';
-import { PizzasModule } from './pizzas/pizzas.module';
-import { PizzasCategoriesModule } from './pizzas-categories/pizzas-categories.module';
-import { UsersModule } from './users/users.module';
-import { WebSocketModule } from './web-socket.module';
+import { IngredientsModule } from './features/models/ingredients/ingredients.module';
+import { OrdersModule } from './features/models/orders/orders.module';
+import { PizzasModule } from './features/models/pizzas/pizzas.module';
+import { PizzasCategoriesModule } from './features/models/pizzas-categories/pizzas-categories.module';
+import { UsersModule } from './features/models/users/users.module';
+import { WebSocketService } from './web-socket.component';
 
 @Module({
   modules: [
@@ -19,8 +19,8 @@ import { WebSocketModule } from './web-socket.module';
     PizzasModule,
     PizzasCategoriesModule,
     UsersModule,
-    WebSocketModule,
   ],
   controllers: [AppController],
+  components: [WebSocketService]
 })
 export class ApplicationModule {}
