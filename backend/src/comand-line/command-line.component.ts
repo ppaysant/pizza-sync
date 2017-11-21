@@ -16,20 +16,21 @@ export class CommandLineService {
   private registerProviderCommand() {
     const self = this;
 
-    this.vorpal
+    self.vorpal
       .command('provider <provider>', 'Change current provider')
       .description('Set the current provider')
       .autocomplete(this.pizzasProvidersService.getProvidersShortNames())
       .action(function(args, callback) {
+        const vorpalContext = this;
         const newProviderName = args.provider;
 
         if (!newProviderName) {
-          this.log('You need to select a provider');
+          vorpalContext.log('You need to select a provider');
           return callback();
         }
 
         if (!self.pizzasProvidersService.includes(newProviderName)) {
-          this.log('Unknown provider');
+          vorpalContext.log('Unknown provider');
           return callback();
         }
 
@@ -45,10 +46,11 @@ export class CommandLineService {
   private registerProvidersCommand() {
     const self = this;
 
-    this.vorpal
+    self.vorpal
       .command('providers', 'List available pizzas providers')
       .action(function(args, callback) {
-        self.displayFormattedProviders(this);
+        const vorpalContext = this;
+        self.displayFormattedProviders(vorpalContext);
 
         return callback();
       });

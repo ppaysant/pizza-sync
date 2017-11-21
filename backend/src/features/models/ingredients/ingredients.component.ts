@@ -17,6 +17,7 @@ export class IngredientsService extends NormalizedModel<IIngredientWithoutId> {
 
   registerIfNewAndGetId(ingredientName: string): string {
     ingredientName = cleanIngredientName(ingredientName);
+
     if (this.ingredients.has(ingredientName)) {
       return this.ingredients.get(ingredientName).id;
     }

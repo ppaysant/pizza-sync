@@ -17,14 +17,6 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
     this.setMinuteEnd(currentDate.getMinutes());
   }
 
-  addOrder(order: IOrderWithoutId) {
-    return this.create(order);
-  }
-
-  removeOrder(orderId: string) {
-    return this.delete(orderId);
-  }
-
   getHourEnd() {
     return this.hourEnd;
   }

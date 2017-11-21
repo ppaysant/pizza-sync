@@ -41,31 +41,18 @@ export class UsersService extends NormalizedModel<IUserWithoutId> {
         `https://api.github.com/users/${username}`,
         requestOptions,
         (error, response, body) => {
-          let user: IUserWithoutId;
+          const user: IUserWithoutId = {
+            username,
+            thumbnail: '',
+            nbConnections: 0,
+            isOnline: false,
+          };
 
-          if (error) {
-            user = {
-              username,
-              thumbnail: '',
-              nbConnections: 0,
-              isOnline: false,
-            };
-          } else {
-            let thumbnail = '';
-
+          if (!error) {
             try {
               body = JSON.parse(body);
-              thumbnail = body.avatar_url || '';
-            } catch (e) {
-              thumbnail = '';
-            }
-
-            user = {
-              username,
-              thumbnail,
-              nbConnections: 0,
-              isOnline: false,
-            };
+              user.thumbnail = body.avatar_url || '';
+            } catch (err) {}
           }
 
           const newUser = this.create(user);
@@ -77,6 +64,10 @@ export class UsersService extends NormalizedModel<IUserWithoutId> {
   }
 
   setUserOnline(user: IUserWithId): void {
+    if (!this.byId[user.id]) {
+      return;
+    }
+
     this.byId[user.id].isOnline = true;
     this.byId[user.id].nbConnections++;
   }

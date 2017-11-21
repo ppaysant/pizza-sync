@@ -8,3 +8,8 @@ export interface IUserWithoutId {
 export interface IUserWithId extends IUserWithoutId {
   id: string;
 }
+
+export interface IUsersNormalized {
+  byId: { [key: string]: IUserWithId };
+  allIds: string[];
+}

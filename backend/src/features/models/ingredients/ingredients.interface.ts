@@ -5,3 +5,8 @@ export interface IIngredientWithoutId {
 export interface IIngredientWithId extends IIngredientWithoutId {
   id: string;
 }
+
+export interface IIngredientsNormalized {
+  byId: { [key: string]: IIngredientWithId };
+  allIds: string[];
+}

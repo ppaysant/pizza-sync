@@ -61,7 +61,7 @@ export class WebSocketService
   @SubscribeMessage('ADD_ORDER')
   addOrder(client, orderWithoutId: IOrderWithoutId) {
     // TODO : block if current time >= hourEnd and minuteEnd
-    const order = this.ordersService.addOrder(orderWithoutId);
+    const order = this.ordersService.create(orderWithoutId);
 
     this.server.sockets.emit('ADD_ORDER_SUCCESS', order);
   }
@@ -69,7 +69,7 @@ export class WebSocketService
   @SubscribeMessage('REMOVE_ORDER')
   removeOrder(client, orderId: string) {
     // TODO : block if current time >= hourEnd and minuteEnd
-    const hasOrderBeenRemoved = this.ordersService.removeOrder(orderId);
+    const hasOrderBeenRemoved = this.ordersService.delete(orderId);
 
     if (hasOrderBeenRemoved) {
       this.server.sockets.emit('REMOVE_ORDER_SUCCESS', orderId);

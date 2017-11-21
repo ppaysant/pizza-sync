@@ -8,3 +8,8 @@ export interface IPizzaWithoutId {
 export interface IPizzaWithId extends IPizzaWithoutId {
   id: string;
 }
+
+export interface IPizzasNormalized {
+  byId: { [key: string]: IPizzaWithId };
+  allIds: string[];
+}
