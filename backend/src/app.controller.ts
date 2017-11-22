@@ -23,14 +23,15 @@ export class AppController {
   > {
     const pizzaProviderInformation = await this.pizzasProvidersService
       .getCurrentProvider()
-      .getCompleteAndNormalizedInformation();
+      .fetchAndParseData();
 
-    const initialState = {
-      ...pizzaProviderInformation,
-      users: this.usersService.getNormalizedData(),
-      orders: this.ordersService.getNormalizedData(),
-    };
+    return null;
+    // const initialState = {
+    //   ...pizzaProviderInformation,
+    //   users: this.usersService.getNormalizedData(),
+    //   orders: this.ordersService.getNormalizedData(),
+    // };
 
-    return initialState;
+    // return initialState;
   }
 }

@@ -30,58 +30,73 @@ export abstract class PizzasProvider {
   // this should be the first method to call on a pizza provider
   // it'll try to fetch and parse all the required data and then
   // will give us an access to synchronous data on a pizza provider
-  abstract fetchParseAndUpdate(): Promise<void>;
-
-  getCompleteAndNormalizedInformation(): INormalizedInformation {
-    return {
-      pizzeria: {
-        name: this.longCompanyName,
-        phone: this.phone,
-        url: this.url,
-      },
-      pizzas: this.pizzasService.getNormalizedData(),
-      pizzasCategories: this.pizzasCategoriesService.getNormalizedData(),
-      ingredients: this.ingredientsService.getNormalizedData(),
+  abstract fetchAndParseData(): Promise<{
+    pizzeria: {
+      name: string;
+      phone: string;
+      url: string;
+      pizzasCategories: {
+        name: string;
+        pizzas: {
+          name: string;
+          imgUrl: string;
+          ingredients: {name: string}[];
+          prices: number[];
+        }[];
+      }[];
     };
-  }
+  }>;
 
-  protected saveNormalizedData(pizzasAndPizzasCategories: {
-    pizzeria: { name: string; phone: string; url: string };
-    pizzas: any[];
-    pizzasCategories: any[];
-    ingredients: any[];
-  }): void {
-    // normalize the pizzas
-    const normalizedPizzasAndPizzasCaterogies = {
-      pizzeria: pizzasAndPizzasCategories.pizzeria,
-      pizzas: normalizeArray(pizzasAndPizzasCategories.pizzas),
-      pizzasCategories: normalizeArray(
-        pizzasAndPizzasCategories.pizzasCategories
-      ),
-      ingredients: normalizeArray(pizzasAndPizzasCategories.ingredients),
-    };
+  // fetchAndParseInformation(): INormalizedInformation {
+  //   return {
+  //     pizzeria: {
+  //       name: this.longCompanyName,
+  //       phone: this.phone,
+  //       url: this.url,
+  //     },
+  //     pizzas: this.pizzasService.getNormalizedData(),
+  //     pizzasCategories: this.pizzasCategoriesService.getNormalizedData(),
+  //     ingredients: this.ingredientsService.getNormalizedData(),
+  //   };
+  // }
 
-    // as the ingredients will appear in the order of the fetched pizzas
-    // sort the ingredients allIds array to match the alphabetical order
-    normalizedPizzasAndPizzasCaterogies.ingredients.allIds = normalizedPizzasAndPizzasCaterogies.ingredients.allIds.sort(
-      (ingId1, ingId2) => {
-        const ing1 =
-          normalizedPizzasAndPizzasCaterogies.ingredients.byId[ingId1].name;
-        const ing2 =
-          normalizedPizzasAndPizzasCaterogies.ingredients.byId[ingId2].name;
+  // protected saveNormalizedData(pizzasAndPizzasCategories: {
+  //   pizzeria: { name: string; phone: string; url: string };
+  //   pizzas: any[];
+  //   pizzasCategories: any[];
+  //   ingredients: any[];
+  // }): void {
+  //   // normalize the pizzas
+  //   const normalizedPizzasAndPizzasCaterogies = {
+  //     pizzeria: pizzasAndPizzasCategories.pizzeria,
+  //     pizzas: normalizeArray(pizzasAndPizzasCategories.pizzas),
+  //     pizzasCategories: normalizeArray(
+  //       pizzasAndPizzasCategories.pizzasCategories
+  //     ),
+  //     ingredients: normalizeArray(pizzasAndPizzasCategories.ingredients),
+  //   };
 
-        return ing1.localeCompare(ing2);
-      }
-    );
+  //   // as the ingredients will appear in the order of the fetched pizzas
+  //   // sort the ingredients allIds array to match the alphabetical order
+  //   normalizedPizzasAndPizzasCaterogies.ingredients.allIds = normalizedPizzasAndPizzasCaterogies.ingredients.allIds.sort(
+  //     (ingId1, ingId2) => {
+  //       const ing1 =
+  //         normalizedPizzasAndPizzasCaterogies.ingredients.byId[ingId1].name;
+  //       const ing2 =
+  //         normalizedPizzasAndPizzasCaterogies.ingredients.byId[ingId2].name;
 
-    this.pizzasService.setNormalizedData(
-      normalizedPizzasAndPizzasCaterogies.pizzas
-    );
-    this.pizzasCategoriesService.setNormalizedData(
-      normalizedPizzasAndPizzasCaterogies.pizzasCategories
-    );
-    this.ingredientsService.setNormalizedData(
-      normalizedPizzasAndPizzasCaterogies.ingredients
-    );
-  }
+  //       return ing1.localeCompare(ing2);
+  //     }
+  //   );
+
+  //   this.pizzasService.setNormalizedData(
+  //     normalizedPizzasAndPizzasCaterogies.pizzas
+  //   );
+  //   this.pizzasCategoriesService.setNormalizedData(
+  //     normalizedPizzasAndPizzasCaterogies.pizzasCategories
+  //   );
+  //   this.ingredientsService.setNormalizedData(
+  //     normalizedPizzasAndPizzasCaterogies.ingredients
+  //   );
+  // }
 }

@@ -23,13 +23,23 @@ export class OrmeauProvider extends PizzasProvider {
   private pizzasCategories: any;
   private ingredients: any;
 
-  fetchParseAndUpdate() {
+  fetchAndParseData() {
     return new Promise<{
-      pizzeria: { name: string; phone: string; url: string };
-      pizzas: any[];
-      pizzasCategories: any[];
-      ingredients: any[];
-    }>(resolve => {
+      pizzeria: {
+        name: string;
+        phone: string;
+        url: string;
+        pizzasCategories: {
+          name: string;
+          pizzas: {
+            name: string;
+            imgUrl: string;
+            ingredients: { name: string }[];
+            prices: number[];
+          }[];
+        }[];
+      };
+    }>((resolve, reject) => {
       get(this.url, requestOptions, (error, response, body) => {
         if (!error && response.statusCode === 200) {
           // build the response object containing the pizzas and pizzas categories
@@ -38,10 +48,8 @@ export class OrmeauProvider extends PizzasProvider {
               name: this.longCompanyName,
               phone: this.phone,
               url: this.url,
+              pizzasCategories: [] as any[],
             },
-            pizzas: [],
-            pizzasCategories: [],
-            ingredients: [],
           };
 
           const $ = cheerio.load(body);
@@ -61,12 +69,11 @@ export class OrmeauProvider extends PizzasProvider {
               .text();
 
             const finalPizzaCategory = {
-              id: uuid(),
               name: pizzaCategory,
-              pizzasIds: [],
+              pizzas: [],
             };
 
-            res.pizzasCategories.push(finalPizzaCategory);
+            res.pizzeria.pizzasCategories.push(finalPizzaCategory);
 
             const pizzasDom = sectionDom.find($('.corps'));
 
@@ -92,12 +99,15 @@ export class OrmeauProvider extends PizzasProvider {
                 // some pizzas do not have ingredients as they're already written in their title
                 // for example "Poire Williams / chocolat", "Banane / Chocolat" and "Ananas / Chocolat"
                 // we do not want to have empty ingredients and thus, they should be removed
-                .filter(x => x !== '');
+                .filter(x => x !== '')
+                .map(x => ({ name: x.trim() }));
 
-              const pizzaIngredients = pizzaIngredientsTxtArray.map(
-                ingredient =>
-                  this.ingredientsService.registerIfNewAndGetId(ingredient)
-              );
+              // const pizzaIngredients = pizzaIngredientsTxtArray.map(
+              //   ingredient =>
+              //     this.ingredientsService.registerIfNewAndGetId(ingredient)
+              // );
+
+              const pizzaIngredients = pizzaIngredientsTxtArray;
 
               const pizzaPrices = [];
               pizzaPricesDom.map(k => {
@@ -111,29 +121,34 @@ export class OrmeauProvider extends PizzasProvider {
               });
 
               const finalPizza = {
-                id: uuid(),
                 name: pizzaName,
                 imgUrl: getPathImgPizza(pizzaName, this.imgsFolder),
-                ingredientsIds: pizzaIngredients,
+                ingredients: pizzaIngredients,
                 prices: pizzaPrices,
               };
 
-              finalPizzaCategory.pizzasIds.push(finalPizza.id);
-              res.pizzas.push(finalPizza);
+              finalPizzaCategory.pizzas.push(finalPizza);
             });
           });
 
-          res.ingredients = this.ingredientsService.getIngredients();
+          // res.ingredients = this.ingredientsService.getIngredients();
 
-          this.phone = res.pizzeria.phone;
+          // this.phone = res.pizzeria.phone;
 
-          this.pizzas = res.pizzas;
-          this.pizzasCategories = res.pizzasCategories;
-          this.ingredients = res.ingredients;
-
+          // this.pizzas = res.pizzas;
+          // this.pizzasCategories = res.pizzasCategories;
+          // this.ingredients = res.ingredients;
+          console.log(JSON.stringify(res, null, 2));
           resolve(res);
+        } else {
+          const err = `Error while trying to fetch the pizza provider "${
+            this.longCompanyName
+          }" with the following URL: "${this.url}"`;
+
+          reject(err);
         }
       });
-    }).then(result => this.saveNormalizedData(result));
+    });
+    // .then(result => this.saveNormalizedData(result));
   }
 }

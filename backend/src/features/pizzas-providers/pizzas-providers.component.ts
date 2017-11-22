@@ -1,4 +1,6 @@
 import { Component } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
+import { normalize, schema } from 'normalizr';
 
 import { PizzasProvider } from './pizzas-provider.class';
 import { OrmeauProvider } from './implementations/ormeau.class';
@@ -52,7 +54,18 @@ export class PizzasProvidersService {
   }
 
   async setCurrentProvider(provider: PizzasProvider): Promise<void> {
-    await provider.fetchParseAndUpdate();
+    const pizzaProviderInfo = await provider.fetchAndParseData();
+    const pizzaProviderInfoWithIds = this.addIdToPizzasCategoriesPizzasAndIngredients(
+      pizzaProviderInfo
+    );
+    const pizzaProviderInfoNormalized = this.normalizePizzasCategoriesPizzasAndIngredients(
+      pizzaProviderInfoWithIds
+    );
+
+    console.log('----------------------');
+    console.log(JSON.stringify(pizzaProviderInfoNormalized));
+
+    console.log('----------------------');
 
     this.currentProvider = provider;
   }
@@ -65,5 +78,76 @@ export class PizzasProvidersService {
     return this.providers.find(
       provider => provider.shortCompanyName === providerShortCompanyName
     );
+  }
+
+  private addIdToPizzasCategoriesPizzasAndIngredients(a: {
+    pizzeria: {
+      name: string;
+      phone: string;
+      url: string;
+      pizzasCategories: {
+        name: string;
+        pizzas: {
+          name: string;
+          imgUrl: string;
+          ingredients: { name: string }[];
+          prices: number[];
+        }[];
+      }[];
+    };
+  }) {
+    return {
+      pizzeria: {
+        ...a.pizzeria,
+        id: uuid(),
+        pizzasCategories: a.pizzeria.pizzasCategories.map(x => ({
+          ...x,
+          id: uuid(),
+          pizzas: x.pizzas.map(y => ({
+            ...y,
+            id: uuid(),
+            ingredients: y.ingredients.map(z => ({
+              ...z,
+              id: uuid(),
+            })),
+          })),
+        })),
+      },
+    };
+  }
+
+  private normalizePizzasCategoriesPizzasAndIngredients(a) {
+    const ingredient = new schema.Entity('ingredients');
+
+    const pizzas = new schema.Entity('pizzas', {
+      ingredients: [ingredient],
+    });
+
+    const pizzasCategories = new schema.Entity('pizzasCategories', {
+      pizzas: [pizzas],
+    });
+
+    // const pizzeria = new schema.Entity('pizzeria', {
+    //   pizzasCategories: [pizzasCategories],
+    // });
+
+    const normalizedData = normalize(a.pizzeria.pizzasCategories, [
+      pizzasCategories,
+    ]);
+
+    return {
+      pizzasCategories: {
+        byId: normalizedData.entities.pizzasCategories,
+        allIds: Object.keys(normalizedData.entities.pizzasCategories),
+      },
+      pizzas: {
+        byId: normalizedData.entities.pizzas,
+        allIds: Object.keys(normalizedData.entities.pizzas),
+      },
+      ingredients: {
+        byId: normalizedData.entities.ingredients,
+        allIds: Object.keys(normalizedData.entities.ingredients),
+      },
+    };
   }
 }

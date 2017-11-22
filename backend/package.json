@@ -12,10 +12,8 @@
     "lint:fix": "yarn-or-npm run lint:check -- --fix",
     "check": "yarn-or-npm run lint:check && yarn-or-npm run prettier:check",
     "check:fix": "yarn-or-npm run lint:fix; yarn-or-npm run prettier:fix",
-    "prettier:base":
-      "yarn-or-npm run prettier -- --single-quote --trailing-comma es5",
-    "prettier:base-files":
-      "yarn-or-npm run prettier:base -- './**/*.{js,ts,json}'",
+    "prettier:base": "yarn-or-npm run prettier -- --single-quote --trailing-comma es5",
+    "prettier:base-files": "yarn-or-npm run prettier:base -- './**/*.{js,ts,json}'",
     "prettier:fix": "yarn-or-npm run prettier:base-files -- --write",
     "prettier:check": "yarn-or-npm run prettier:base-files -- -l",
     "precommit": "lint-staged",
@@ -23,7 +21,9 @@
   },
   "lint-staged": {
     "linters": {
-      "*.{js,ts,json}": ["yarn-or-npm run prettier:base -- -l"]
+      "*.{js,ts,json}": [
+        "yarn-or-npm run prettier:base -- -l"
+      ]
     }
   },
   "dependencies": {
@@ -35,6 +35,7 @@
     "body-parser": "1.18.2",
     "cheerio": "1.0.0-rc.2",
     "cors": "2.8.4",
+    "normalizr": "3.2.4",
     "redis": "2.8.0",
     "reflect-metadata": "0.1.10",
     "remove-accents": "0.4.2",
@@ -47,6 +48,7 @@
     "@types/cheerio": "0.22.5",
     "@types/cors": "2.8.3",
     "@types/node": "8.0.53",
+    "@types/normalizr": "2.0.18",
     "@types/request": "2.0.8",
     "@types/uuid": "3.4.3",
     "husky": "0.14.3",
