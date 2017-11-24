@@ -41,12 +41,18 @@ export class OrmeauProvider extends PizzasProvider {
       };
     }>((resolve, reject) => {
       get(this.url, requestOptions, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
+        if (error || response.statusCode !== 200) {
+          const err = `Error while trying to fetch the pizza provider "${
+            this.longCompanyName
+          }" with the following URL: "${this.url}"`;
+
+          reject(err);
+        } else {
           // build the response object containing the pizzas and pizzas categories
           const res = {
             pizzeria: {
               name: this.longCompanyName,
-              phone: this.phone,
+              phone: '',
               url: this.url,
               pizzasCategories: [] as any[],
             },
@@ -102,11 +108,6 @@ export class OrmeauProvider extends PizzasProvider {
                 .filter(x => x !== '')
                 .map(x => ({ name: x.trim() }));
 
-              // const pizzaIngredients = pizzaIngredientsTxtArray.map(
-              //   ingredient =>
-              //     this.ingredientsService.registerIfNewAndGetId(ingredient)
-              // );
-
               const pizzaIngredients = pizzaIngredientsTxtArray;
 
               const pizzaPrices = [];
@@ -131,24 +132,11 @@ export class OrmeauProvider extends PizzasProvider {
             });
           });
 
-          // res.ingredients = this.ingredientsService.getIngredients();
+          this.phone = res.pizzeria.phone;
 
-          // this.phone = res.pizzeria.phone;
-
-          // this.pizzas = res.pizzas;
-          // this.pizzasCategories = res.pizzasCategories;
-          // this.ingredients = res.ingredients;
-          console.log(JSON.stringify(res, null, 2));
           resolve(res);
-        } else {
-          const err = `Error while trying to fetch the pizza provider "${
-            this.longCompanyName
-          }" with the following URL: "${this.url}"`;
-
-          reject(err);
         }
       });
     });
-    // .then(result => this.saveNormalizedData(result));
   }
 }

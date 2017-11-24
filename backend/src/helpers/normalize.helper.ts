@@ -1,11 +1,11 @@
 export function normalizeArray(
-  arr: { id: string }[]
+  array: { id: string }[]
 ): { byId: {}; allIds: string[] } {
-  if (!arr) {
+  if (!array) {
     return { byId: {}, allIds: [] };
   }
 
-  return arr.reduce(
+  return array.reduce(
     (acc, next) => {
       acc.byId[next.id] = next;
       acc.allIds.push(next.id);

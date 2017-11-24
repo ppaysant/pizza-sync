@@ -12,6 +12,7 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
   constructor() {
     super('orderId');
 
+    // by default, the app stop accepting orders after 1 hour
     const currentDate = new Date();
     this.setHourEnd(currentDate.getHours() + 1);
     this.setMinuteEnd(currentDate.getMinutes());
@@ -25,6 +26,7 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
     return this.minuteEnd;
   }
 
+  // TODO: add a command line to change this
   setHourEnd(hourEnd) {
     this.hourEnd = hourEnd;
   }

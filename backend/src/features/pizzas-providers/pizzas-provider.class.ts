@@ -5,14 +5,10 @@ import { IngredientsService } from '../models/ingredients/ingredients.component'
 import { normalizeArray } from '../../helpers/normalize.helper';
 
 export abstract class PizzasProvider {
-  /**
-   * used to display in lists
-   */
+  //  used to display in lists
   abstract longCompanyName: string;
 
-  /**
-   * used to write in console autocomplete
-   */
+  //  used to write in console autocomplete
   abstract shortCompanyName: string;
 
   protected abstract phone: string;
@@ -40,63 +36,18 @@ export abstract class PizzasProvider {
         pizzas: {
           name: string;
           imgUrl: string;
-          ingredients: {name: string}[];
+          ingredients: { name: string }[];
           prices: number[];
         }[];
       }[];
     };
   }>;
 
-  // fetchAndParseInformation(): INormalizedInformation {
-  //   return {
-  //     pizzeria: {
-  //       name: this.longCompanyName,
-  //       phone: this.phone,
-  //       url: this.url,
-  //     },
-  //     pizzas: this.pizzasService.getNormalizedData(),
-  //     pizzasCategories: this.pizzasCategoriesService.getNormalizedData(),
-  //     ingredients: this.ingredientsService.getNormalizedData(),
-  //   };
-  // }
-
-  // protected saveNormalizedData(pizzasAndPizzasCategories: {
-  //   pizzeria: { name: string; phone: string; url: string };
-  //   pizzas: any[];
-  //   pizzasCategories: any[];
-  //   ingredients: any[];
-  // }): void {
-  //   // normalize the pizzas
-  //   const normalizedPizzasAndPizzasCaterogies = {
-  //     pizzeria: pizzasAndPizzasCategories.pizzeria,
-  //     pizzas: normalizeArray(pizzasAndPizzasCategories.pizzas),
-  //     pizzasCategories: normalizeArray(
-  //       pizzasAndPizzasCategories.pizzasCategories
-  //     ),
-  //     ingredients: normalizeArray(pizzasAndPizzasCategories.ingredients),
-  //   };
-
-  //   // as the ingredients will appear in the order of the fetched pizzas
-  //   // sort the ingredients allIds array to match the alphabetical order
-  //   normalizedPizzasAndPizzasCaterogies.ingredients.allIds = normalizedPizzasAndPizzasCaterogies.ingredients.allIds.sort(
-  //     (ingId1, ingId2) => {
-  //       const ing1 =
-  //         normalizedPizzasAndPizzasCaterogies.ingredients.byId[ingId1].name;
-  //       const ing2 =
-  //         normalizedPizzasAndPizzasCaterogies.ingredients.byId[ingId2].name;
-
-  //       return ing1.localeCompare(ing2);
-  //     }
-  //   );
-
-  //   this.pizzasService.setNormalizedData(
-  //     normalizedPizzasAndPizzasCaterogies.pizzas
-  //   );
-  //   this.pizzasCategoriesService.setNormalizedData(
-  //     normalizedPizzasAndPizzasCaterogies.pizzasCategories
-  //   );
-  //   this.ingredientsService.setNormalizedData(
-  //     normalizedPizzasAndPizzasCaterogies.ingredients
-  //   );
-  // }
+  getPizzeriaInformation() {
+    return {
+      name: this.longCompanyName,
+      phone: this.phone,
+      url: this.url,
+    };
+  }
 }

@@ -6,32 +6,34 @@ import { OrdersService } from './features/models/orders/orders.component';
 import { INormalizedInformation } from './features/pizzas-providers/pizzas-providers.interface';
 import { IOrdersNormalized } from './features/models/orders/orders.interface';
 import { IUsersNormalized } from './features/models/users/users.interface';
+import { PizzasService } from './features/models/pizzas/pizzas.component';
+import { PizzasCategoriesService } from './features/models/pizzas-categories/pizzas-categories.component';
+import { IngredientsService } from './features/models/ingredients/ingredients.component';
 
 @Controller()
 export class AppController {
   constructor(
     private pizzasProvidersService: PizzasProvidersService,
+    private pizzasService: PizzasService,
+    private pizzasCategoriesService: PizzasCategoriesService,
     private usersService: UsersService,
-    private ordersService: OrdersService
+    private ordersService: OrdersService,
+    private ingredientsService: IngredientsService
   ) {}
 
   @Get('initial-state')
-  async getInitialState(): Promise<
-    INormalizedInformation & { users: IUsersNormalized } & {
-      orders: IOrdersNormalized;
-    }
-  > {
-    const pizzaProviderInformation = await this.pizzasProvidersService
+  getInitialState() {
+    const currentPizzaProviderInformation = this.pizzasProvidersService
       .getCurrentProvider()
-      .fetchAndParseData();
+      .getPizzeriaInformation();
 
-    return null;
-    // const initialState = {
-    //   ...pizzaProviderInformation,
-    //   users: this.usersService.getNormalizedData(),
-    //   orders: this.ordersService.getNormalizedData(),
-    // };
-
-    // return initialState;
+    return {
+      pizzas: this.pizzasService.getNormalizedData(),
+      pizzasCategories: this.pizzasCategoriesService.getNormalizedData(),
+      users: this.usersService.getNormalizedData(),
+      orders: this.ordersService.getNormalizedData(),
+      ingredients: this.ingredientsService.getNormalizedData(),
+      pizzeria: currentPizzaProviderInformation,
+    };
   }
 }

@@ -13,7 +13,7 @@ export class CommandLineService {
     this.vorpal.delimiter('pizza-sync$').show();
   }
 
-  private registerProviderCommand() {
+  private registerProviderCommand(): void {
     const self = this;
 
     self.vorpal
@@ -43,7 +43,7 @@ export class CommandLineService {
       });
   }
 
-  private registerProvidersCommand() {
+  private registerProvidersCommand(): void {
     const self = this;
 
     self.vorpal
@@ -56,7 +56,7 @@ export class CommandLineService {
       });
   }
 
-  private displayFormattedProviders(vorpalContext) {
+  private displayFormattedProviders(vorpalContext): void {
     vorpalContext.log('Available providers (current between curly brackets)');
 
     this.getFormattedProviders().forEach(provider =>
@@ -66,7 +66,7 @@ export class CommandLineService {
 
   // returns an array of providers' name with the
   // currently selected between brackets
-  private getFormattedProviders() {
+  private getFormattedProviders(): string[] {
     const providers = this.pizzasProvidersService.getProviders();
     const currentProvider = this.pizzasProvidersService.getCurrentProvider();
 

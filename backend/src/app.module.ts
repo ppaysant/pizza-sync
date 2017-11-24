@@ -21,6 +21,6 @@ import { WebSocketService } from './web-socket.component';
     UsersModule,
   ],
   controllers: [AppController],
-  components: [WebSocketService]
+  components: [WebSocketService],
 })
 export class ApplicationModule {}
