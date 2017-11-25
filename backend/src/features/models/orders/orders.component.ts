@@ -1,11 +1,20 @@
 import { Component } from '@nestjs/common';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  SubscribeMessage,
+  OnGatewayConnection,
+} from '@nestjs/websockets';
 
 import { NormalizedModel } from '../normalized-model.class';
 import { IOrderWithId, IOrderWithoutId } from './orders.interface';
-import { WebSocketService } from '../../../web-socket.component';
 
-@Component()
+// @Component()
+@WebSocketGateway({ namespace: 'orders' })
 export class OrdersService extends NormalizedModel<IOrderWithoutId> {
+  // implements OnGatewayConnection {
+  // @WebSocketServer() server;
+
   // when the app should stop accepting orders
   private hourEnd: number;
   private minuteEnd: number;
@@ -17,7 +26,8 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
     const currentDate = new Date();
     this.setHourAndMinuteEnd(
       currentDate.getHours() + 1,
-      currentDate.getMinutes()
+      currentDate.getMinutes(),
+      false
     );
   }
 
@@ -30,10 +40,41 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
   }
 
   // TODO: add a command line to change this
-  setHourAndMinuteEnd(hourEnd, minuteEnd) {
+  setHourAndMinuteEnd(hourEnd, minuteEnd, broadcast = true) {
     this.hourEnd = hourEnd;
     this.minuteEnd = minuteEnd;
 
-    // this.webSocketService.setCountdown(hourEnd, minuteEnd);
+    // if (broadcast) {
+    //   this.server.sockets.emit('SET_COUNTDOWN', {
+    //     hour: this.hourEnd,
+    //     minute: this.minuteEnd,
+    //   });
+    // }
   }
+
+  // handleConnection(client: any) {
+  //   console.log('ok')
+  //   client.emit('SET_COUNTDOWN', {
+  //     hour: this.hourEnd,
+  //     minute: this.minuteEnd,
+  //   });
+  // }
+  // WebSocketGateway
+  // @SubscribeMessage('ADD_ORDER')
+  // addOrder(client, orderWithoutId: IOrderWithoutId) {
+  //   // TODO : block if current time >= hourEnd and minuteEnd
+  //   const order = this.create(orderWithoutId);
+
+  //   this.server.sockets.emit('ADD_ORDER_SUCCESS', order);
+  // }
+
+  // @SubscribeMessage('REMOVE_ORDER')
+  // removeOrder(client, orderId: string) {
+  //   // TODO : block if current time >= hourEnd and minuteEnd
+  //   const hasOrderBeenRemoved = this.delete(orderId);
+
+  //   if (hasOrderBeenRemoved) {
+  //     this.server.sockets.emit('REMOVE_ORDER_SUCCESS', orderId);
+  //   }
+  // }
 }

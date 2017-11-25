@@ -1,14 +1,56 @@
 import { Component } from '@nestjs/common';
+import {
+  WebSocketGateway,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  WebSocketServer,
+  SubscribeMessage,
+} from '@nestjs/websockets';
 import { get } from 'request';
 
 import { NormalizedModel } from '../normalized-model.class';
 import { requestOptions } from '../../../helpers/http.helper';
 import { IUserWithId, IUserWithoutId } from './users.interface';
 
-@Component()
-export class UsersService extends NormalizedModel<IUserWithoutId> {
+@WebSocketGateway({ namespace: 'users' })
+export class UsersService extends NormalizedModel<IUserWithoutId>
+  implements OnGatewayDisconnect {
+  @WebSocketServer() server;
+
   constructor() {
     super('userId');
+  }
+
+  @SubscribeMessage('CONNECT_USER')
+  async connectUser(client, username: string) {
+    console.log('CONNECT USER');
+    const user = this.getUser(username);
+
+    if (!!user) {
+      this.setUserOnline(user);
+
+      return { event: 'CONNECT_USER_SUCCESS', data: user };
+    } else {
+      const newUser = await this.addUser(username);
+
+      client.user = newUser;
+
+      this.setUserOnline(newUser);
+      return { event: 'CONNECT_USER_SUCCESS', data: newUser };
+      // this.server.sockets.emit('CONNECT_USER_SUCCESS', newUser);
+    }
+  }
+
+  handleDisconnect(client: any) {
+    if (!client.user) {
+      return;
+    }
+
+    this.setUserOffline(client.user);
+
+    if (this.getNbConnectionsUser(client.user) === 0) {
+      return { event: 'DISCONNECT_USER_SUCCESS', data: client.user.id };
+    }
   }
 
   getUser(username: string): IUserWithId {

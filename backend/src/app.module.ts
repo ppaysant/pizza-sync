@@ -8,7 +8,6 @@ import { OrdersModule } from './features/models/orders/orders.module';
 import { PizzasModule } from './features/models/pizzas/pizzas.module';
 import { PizzasCategoriesModule } from './features/models/pizzas-categories/pizzas-categories.module';
 import { UsersModule } from './features/models/users/users.module';
-import { WebSocketModule } from './web-socket.module';
 
 @Module({
   modules: [
@@ -19,7 +18,6 @@ import { WebSocketModule } from './web-socket.module';
     PizzasModule,
     PizzasCategoriesModule,
     UsersModule,
-    WebSocketModule,
   ],
   controllers: [AppController],
 })
