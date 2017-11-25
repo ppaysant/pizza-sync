@@ -17,7 +17,7 @@ export class ProviderCommand extends Command {
   }
 
   action(
-    args: { [key: string]: string },
+    args: { provider: string },
     callback: () => void,
     vorpalContext: { log: (msg: string) => void }
   ) {

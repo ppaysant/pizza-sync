@@ -1,6 +1,9 @@
+// this abstract class aims to help developers
+// to create a new vorpal command in isolation
 export abstract class Command {
   abstract titleWithParams: string;
   abstract description: string;
+  options: { title: string; description: string }[] | false = false;
 
   constructor(private _vorpal: any) {}
 
@@ -9,7 +12,7 @@ export abstract class Command {
   }
 
   abstract action(
-    args: { [key: string]: string },
+    args: {},
     callback: () => void,
     vorpalContext: { log: (msg: string) => void }
   );

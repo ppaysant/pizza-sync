@@ -8,7 +8,7 @@ import { OrdersModule } from './features/models/orders/orders.module';
 import { PizzasModule } from './features/models/pizzas/pizzas.module';
 import { PizzasCategoriesModule } from './features/models/pizzas-categories/pizzas-categories.module';
 import { UsersModule } from './features/models/users/users.module';
-import { WebSocketService } from './web-socket.component';
+import { WebSocketModule } from './web-socket.module';
 
 @Module({
   modules: [
@@ -19,8 +19,8 @@ import { WebSocketService } from './web-socket.component';
     PizzasModule,
     PizzasCategoriesModule,
     UsersModule,
+    WebSocketModule,
   ],
   controllers: [AppController],
-  components: [WebSocketService],
 })
 export class ApplicationModule {}

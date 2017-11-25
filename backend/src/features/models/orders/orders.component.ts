@@ -2,6 +2,7 @@ import { Component } from '@nestjs/common';
 
 import { NormalizedModel } from '../normalized-model.class';
 import { IOrderWithId, IOrderWithoutId } from './orders.interface';
+import { WebSocketService } from '../../../web-socket.component';
 
 @Component()
 export class OrdersService extends NormalizedModel<IOrderWithoutId> {
@@ -14,8 +15,10 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
 
     // by default, the app stop accepting orders after 1 hour
     const currentDate = new Date();
-    this.setHourEnd(currentDate.getHours() + 1);
-    this.setMinuteEnd(currentDate.getMinutes());
+    this.setHourAndMinuteEnd(
+      currentDate.getHours() + 1,
+      currentDate.getMinutes()
+    );
   }
 
   getHourEnd() {
@@ -27,11 +30,10 @@ export class OrdersService extends NormalizedModel<IOrderWithoutId> {
   }
 
   // TODO: add a command line to change this
-  setHourEnd(hourEnd) {
+  setHourAndMinuteEnd(hourEnd, minuteEnd) {
     this.hourEnd = hourEnd;
-  }
-
-  setMinuteEnd(minuteEnd) {
     this.minuteEnd = minuteEnd;
+
+    // this.webSocketService.setCountdown(hourEnd, minuteEnd);
   }
 }

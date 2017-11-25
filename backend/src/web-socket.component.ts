@@ -75,4 +75,11 @@ export class WebSocketService
       this.server.sockets.emit('REMOVE_ORDER_SUCCESS', orderId);
     }
   }
+
+  setCountdown(hour: number, minute: number): void {
+    this.server.sockets.emit('SET_COUNTDOWN', {
+      hour,
+      minute,
+    });
+  }
 }

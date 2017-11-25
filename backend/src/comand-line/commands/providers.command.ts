@@ -13,7 +13,7 @@ export class ProvidersCommand extends Command {
   }
 
   action(
-    args: { [key: string]: string },
+    _,
     callback: () => void,
     vorpalContext: { log: (msg: string) => void }
   ) {
