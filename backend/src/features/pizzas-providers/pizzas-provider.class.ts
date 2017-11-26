@@ -122,58 +122,91 @@ export abstract class PizzasProvider {
     const pizzasCategories = this.getPizzasCategoriesWrapper($);
 
     pizzasCategories.map((i, pizzaCategoryHtml) => {
-      const pizzaCategoryDom = $(pizzaCategoryHtml);
+      const pizzaCategory = this.parsePizzaCategory($, pizzaCategoryHtml);
 
-      const pizzaCategory = this.getPizzaCategory(pizzaCategoryDom);
-
-      const finalPizzaCategory = {
-        name: pizzaCategory,
-        pizzas: [],
-      };
-
-      res.pizzasCategories.push(finalPizzaCategory);
-
-      const pizzasDom = this.getPizzasWrappers(pizzaCategoryDom);
-
-      pizzasDom.map((j, pizzaHtml) => {
-        const pizzaDom = $(pizzaHtml);
-
-        const pizzaName = this.getPizzaName(pizzaDom);
-
-        const pizzaIngredients = this.getPizzaIngredients(pizzaDom)
-          // some pizzas do not have ingredients as they're already written in their title
-          // for example "Poire Williams / chocolat", "Banane / Chocolat" and "Ananas / Chocolat"
-          // we do not want to have empty ingredients and thus, they should be removed
-          .filter(x => x !== '')
-          .map(x => ({ name: x.trim() }));
-
-        const pizzaPrices = this.getPrices(pizzaDom, $);
-
-        const imgUrlTmp = this.getPizzaImage();
-
-        let imgUrl;
-        if (imgUrlTmp[`localFolderName`]) {
-          const imgFolderName = `${this.imgsBaseFolder}/${
-            imgUrlTmp[`localFolderName`]
-          }`;
-
-          imgUrl = getPathImgPizza(pizzaName, imgFolderName);
-        } else {
-          imgUrl = imgUrlTmp[`distantUrl`];
-        }
-
-        const finalPizza = {
-          name: pizzaName,
-          imgUrl,
-          ingredients: pizzaIngredients,
-          prices: pizzaPrices,
-        };
-
-        finalPizzaCategory.pizzas.push(finalPizza);
-      });
+      res.pizzasCategories.push(pizzaCategory);
     });
 
     return res;
+  }
+
+  private parsePizzaCategory(
+    $: CheerioStatic,
+    pizzaCategoryHtml: CheerioElement
+  ): {
+    name: string;
+    pizzas: {
+      name: string;
+      imgUrl: string;
+      ingredients: { name: string }[];
+      prices: number[];
+    }[];
+  } {
+    const pizzaCategoryDom = $(pizzaCategoryHtml);
+
+    const pizzaCategory = this.getPizzaCategory(pizzaCategoryDom);
+
+    const finalPizzaCategory = {
+      name: pizzaCategory,
+      pizzas: [],
+    };
+
+    const pizzasDom = this.getPizzasWrappers(pizzaCategoryDom);
+
+    pizzasDom.map((j, pizzaHtml) => {
+      const pizza = this.parsePizza($, pizzaHtml);
+
+      finalPizzaCategory.pizzas.push(pizza);
+    });
+
+    return finalPizzaCategory;
+  }
+
+  private parsePizza(
+    $: CheerioStatic,
+    pizzaHtml: CheerioElement
+  ): {
+    name: string;
+    imgUrl: string;
+    ingredients: { name: string }[];
+    prices: number[];
+  } {
+    const pizzaDom = $(pizzaHtml);
+
+    const pizzaName = this.getPizzaName(pizzaDom);
+
+    return {
+      name: pizzaName,
+      imgUrl: this.getLocalOrDistantImage(pizzaName),
+      ingredients: this.getCleanedIngredients(pizzaDom),
+      prices: this.getPrices(pizzaDom, $),
+    };
+  }
+
+  private getCleanedIngredients(pizzaDom: Cheerio) {
+    return (
+      this.getPizzaIngredients(pizzaDom)
+        // some pizzas do not have ingredients as they're already written in their title
+        // for example "Poire Williams / chocolat", "Banane / Chocolat" and "Ananas / Chocolat"
+        // we do not want to have empty ingredients and thus, they should be removed
+        .filter(x => x !== '')
+        .map(x => ({ name: x.trim() }))
+    );
+  }
+
+  private getLocalOrDistantImage(pizzaName: string): string {
+    const imgLocalOrDistant = this.getPizzaImage();
+
+    const localFolderName = imgLocalOrDistant[`localFolderName`];
+    const distantUrl = imgLocalOrDistant[`distantUrl`];
+
+    if (localFolderName) {
+      const imgFolderName = `${this.imgsBaseFolder}/${localFolderName}`;
+
+      return getPathImgPizza(pizzaName, imgFolderName);
+    }
+
+    return distantUrl;
   }
 
   // following methods are helpers to parse a page

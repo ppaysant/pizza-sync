@@ -42,33 +42,29 @@ export class OrmeauProvider extends PizzasProvider {
   }
 
   getPizzaIngredients(pizzaWrapper: Cheerio): string[] {
-    const pizzaIngredientsTxt = pizzaWrapper.find('.composition').text();
-
-    const pizzaIngredientsTxtArray = pizzaIngredientsTxt
+    const pizzaIngredientsText = pizzaWrapper
+      .find('.composition')
+      .text()
       .replace('.', '')
       .replace(', ', ',')
-      .trim()
-      .split(',');
+      .trim();
 
-    return pizzaIngredientsTxtArray;
+    return pizzaIngredientsText.split(',');
   }
 
   getPrices(pizzaWrapper: Cheerio, $: CheerioStatic): number[] {
-    const pizzaPrices = [];
     const pizzaPricesDom = pizzaWrapper.find('.prix');
 
-    pizzaPricesDom.map(k => {
-      const price = $(pizzaPricesDom[k])
+    return pizzaPricesDom.toArray().map(pizzaPriceDom => {
+      const price = $(pizzaPriceDom)
         .children()
         .remove()
         .end()
         .text()
         .replace(',', '.');
 
-      pizzaPrices.push(parseFloat(price));
+      return +price;
     });
-
-    return pizzaPrices;
   }
 
   getPizzaImage(): { localFolderName: string } | { distantUrl: string } {
