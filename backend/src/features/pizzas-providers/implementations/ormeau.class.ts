@@ -1,142 +1,77 @@
 import { Component } from '@nestjs/common';
-import { get } from 'request';
 import { v4 as uuid } from 'uuid';
-import * as cheerio from 'cheerio';
 
 import { PizzasProvider } from '../pizzas-provider.class';
-import { requestOptions } from '../../../helpers/http.helper';
-import { IngredientsService } from '../../models/ingredients/ingredients.component';
-import { getPathImgPizza } from '../../../helpers/file.helper';
-import { INormalizedInformation } from '../pizzas-providers.interface';
 
 export class OrmeauProvider extends PizzasProvider {
   readonly longCompanyName = `L'Ormeau`;
   readonly shortCompanyName = `Ormeau`;
 
-  protected phone = '';
-  protected url = 'http://www.pizzadelormeau.com/nos-pizzas/';
-  protected imgsFolder = `${
-    __dirname
-  }/../../../../../frontend/src/assets/img/pizzas-providers/l-ormeau`;
+  protected phone = '05 61 34 86 23';
+  protected url = 'http://www.pizzadelormeau.com';
+  protected urlsPizzasPages = ['http://www.pizzadelormeau.com/nos-pizzas/'];
 
-  private pizzas: any;
-  private pizzasCategories: any;
-  private ingredients: any;
+  getPhone() {
+    return this.phone;
+  }
 
-  fetchAndParseData() {
-    return new Promise<{
-      pizzeria: {
-        name: string;
-        phone: string;
-        url: string;
-        pizzasCategories: {
-          name: string;
-          pizzas: {
-            name: string;
-            imgUrl: string;
-            ingredients: { name: string }[];
-            prices: number[];
-          }[];
-        }[];
-      };
-    }>((resolve, reject) => {
-      get(this.url, requestOptions, (error, response, body) => {
-        if (error || response.statusCode !== 200) {
-          const err = `Error while trying to fetch the pizza provider "${
-            this.longCompanyName
-          }" with the following URL: "${this.url}"`;
+  getPizzasCategoriesWrapper($: CheerioStatic): Cheerio {
+    return $('.entry-content .section');
+  }
 
-          reject(err);
-        } else {
-          // build the response object containing the pizzas and pizzas categories
-          const res = {
-            pizzeria: {
-              name: this.longCompanyName,
-              phone: '',
-              url: this.url,
-              pizzasCategories: [] as any[],
-            },
-          };
+  getPizzaCategory(pizzaCategoryWrapper: Cheerio): string {
+    return pizzaCategoryWrapper
+      .find('.title')
+      .children()
+      .remove()
+      .end()
+      .text();
+  }
 
-          const $ = cheerio.load(body);
+  getPizzasWrappers(pizzaCategoryWrapper: Cheerio): Cheerio {
+    return pizzaCategoryWrapper.find('.corps');
+  }
 
-          res.pizzeria.phone = $('.header-main .site_info').text();
+  getPizzaName(pizzaWrapper: Cheerio): string {
+    return pizzaWrapper
+      .find('.nom')
+      .children()
+      .remove()
+      .end()
+      .text();
+  }
 
-          const sectionsDom = $('.entry-content .section');
+  getPizzaIngredients(pizzaWrapper: Cheerio): string[] {
+    const pizzaIngredientsTxt = pizzaWrapper.find('.composition').text();
 
-          sectionsDom.map(i => {
-            const sectionDom = $(sectionsDom[i]);
+    const pizzaIngredientsTxtArray = pizzaIngredientsTxt
+      .replace('.', '')
+      .replace(', ', ',')
+      .trim()
+      .split(',');
 
-            const pizzaCategory = sectionDom
-              .find($('.title'))
-              .children()
-              .remove()
-              .end()
-              .text();
+    return pizzaIngredientsTxtArray;
+  }
 
-            const finalPizzaCategory = {
-              name: pizzaCategory,
-              pizzas: [],
-            };
+  getPrices(pizzaWrapper: Cheerio, $: CheerioStatic): number[] {
+    const pizzaPrices = [];
+    const pizzaPricesDom = pizzaWrapper.find('.prix');
 
-            res.pizzeria.pizzasCategories.push(finalPizzaCategory);
+    pizzaPricesDom.map(k => {
+      const price = $(pizzaPricesDom[k])
+        .children()
+        .remove()
+        .end()
+        .text()
+        .replace(',', '.');
 
-            const pizzasDom = sectionDom.find($('.corps'));
-
-            pizzasDom.map(j => {
-              const pizzaDom = $(pizzasDom[j]);
-
-              const pizzaName = pizzaDom
-                .find($('.nom'))
-                .children()
-                .remove()
-                .end()
-                .text();
-              const pizzaIngredientsTxt = pizzaDom
-                .find($('.composition'))
-                .text();
-              const pizzaPricesDom = pizzaDom.find($('.prix'));
-
-              const pizzaIngredientsTxtArray = pizzaIngredientsTxt
-                .replace('.', '')
-                .replace(', ', ',')
-                .trim()
-                .split(',')
-                // some pizzas do not have ingredients as they're already written in their title
-                // for example "Poire Williams / chocolat", "Banane / Chocolat" and "Ananas / Chocolat"
-                // we do not want to have empty ingredients and thus, they should be removed
-                .filter(x => x !== '')
-                .map(x => ({ name: x.trim() }));
-
-              const pizzaIngredients = pizzaIngredientsTxtArray;
-
-              const pizzaPrices = [];
-              pizzaPricesDom.map(k => {
-                const price = $(pizzaPricesDom[k])
-                  .children()
-                  .remove()
-                  .end()
-                  .text()
-                  .replace(',', '.');
-                pizzaPrices.push(parseFloat(price));
-              });
-
-              const finalPizza = {
-                name: pizzaName,
-                imgUrl: getPathImgPizza(pizzaName, this.imgsFolder),
-                ingredients: pizzaIngredients,
-                prices: pizzaPrices,
-              };
-
-              finalPizzaCategory.pizzas.push(finalPizza);
-            });
-          });
-
-          this.phone = res.pizzeria.phone;
-
-          resolve(res);
-        }
-      });
+      pizzaPrices.push(parseFloat(price));
     });
+
+    return pizzaPrices;
+  }
+
+  getPizzaImage(): { localFolderName: string } | { distantUrl: string } {
+    return { localFolderName: 'l-ormeau' };
   }
 }
