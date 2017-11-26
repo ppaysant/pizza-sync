@@ -11,7 +11,7 @@ export class OrmeauProvider extends PizzasProvider {
   protected url = 'http://www.pizzadelormeau.com';
   protected urlsPizzasPages = ['http://www.pizzadelormeau.com/nos-pizzas/'];
 
-  getPhone() {
+  getPhone(): string {
     return this.phone;
   }
 

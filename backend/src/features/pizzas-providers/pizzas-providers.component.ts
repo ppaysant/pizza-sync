@@ -7,10 +7,7 @@ import { OrmeauProvider } from './implementations/ormeau.class';
 import { PizzasService } from '../models/pizzas/pizzas.component';
 import { PizzasCategoriesService } from '../models/pizzas-categories/pizzas-categories.component';
 import { IngredientsService } from '../models/ingredients/ingredients.component';
-import {
-  renameKeyInObject,
-  renameKeysInObject,
-} from './../../helpers/object.helper';
+import { renameKeysInObject } from './../../helpers/object.helper';
 import {
   IPizzeriaNestedFkWithoutId,
   IPizzeriaNestedFkWithId,
@@ -38,14 +35,7 @@ export class PizzasProvidersService {
     // list all the providers within the array
     const providers = [OrmeauProvider];
 
-    this.providers = providers.map(
-      PizzaProvider =>
-        new PizzaProvider(
-          pizzasService,
-          pizzasCategoriesService,
-          ingredientsService
-        )
-    );
+    this.providers = providers.map(PizzaProvider => new PizzaProvider());
   }
 
   getProviders(): PizzasProvider[] {

@@ -1,15 +1,6 @@
-import {
-  IIngredientWithId,
-  IIngredientsNormalized,
-} from './../models/ingredients/ingredients.interface';
-import {
-  IPizzaWithId,
-  IPizzasNormalized,
-} from '../models/pizzas/pizzas.interface';
-import {
-  IPizzaCategoryWithId,
-  IPizzasCategoriesNormalized,
-} from '../models/pizzas-categories/pizzas-categories.interface';
+import { IIngredientsNormalized } from './../models/ingredients/ingredients.interface';
+import { IPizzasNormalized } from '../models/pizzas/pizzas.interface';
+import { IPizzasCategoriesNormalized } from '../models/pizzas-categories/pizzas-categories.interface';
 
 export interface INormalizedInformation {
   pizzeria: { name: string; phone: string; url: string };
@@ -22,7 +13,7 @@ export interface INormalizedInformation {
 // NESTED WITHOUT ID
 // --------------------------
 // pizzeria
-interface IPizzeriaNestedCommonWithoutId {
+export interface IPizzeriaNestedCommonWithoutId {
   name: string;
   phone: string;
   url: string;
@@ -36,7 +27,8 @@ export interface IPizzeriaNestedFkWithoutId
 interface IPizzaCategoryCommonWithoutId {
   name: string;
 }
-interface IPizzaCategoryFkWithoutId extends IPizzaCategoryCommonWithoutId {
+export interface IPizzaCategoryFkWithoutId
+  extends IPizzaCategoryCommonWithoutId {
   pizzas: IPizzaFkWithoutId[];
 }
 
@@ -46,7 +38,7 @@ interface IPizzaCommonWithoutId {
   imgUrl: string;
   prices: number[];
 }
-interface IPizzaFkWithoutId {
+export interface IPizzaFkWithoutId extends IPizzaCommonWithoutId {
   ingredients: { name: string }[];
 }
 

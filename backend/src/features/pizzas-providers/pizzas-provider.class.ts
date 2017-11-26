@@ -1,8 +1,12 @@
 import { get } from 'request';
 import * as cheerio from 'cheerio';
 
-import { INormalizedInformation } from './pizzas-providers.interface';
-import { normalizeArray } from '../../helpers/normalize.helper';
+import {
+  IPizzeriaNestedCommonWithoutId,
+  IPizzeriaNestedFkWithoutId,
+  IPizzaCategoryFkWithoutId,
+  IPizzaFkWithoutId,
+} from './pizzas-providers.interface';
 import { requestOptions } from '../../helpers/http.helper';
 import { getPathImgPizza } from '../../helpers/file.helper';
 
@@ -26,7 +30,7 @@ export abstract class PizzasProvider {
 
   constructor() {}
 
-  getPizzeriaInformation() {
+  getPizzeriaInformation(): IPizzeriaNestedCommonWithoutId {
     return {
       name: this.longCompanyName,
       phone: this.phone,
@@ -35,20 +39,7 @@ export abstract class PizzasProvider {
   }
 
   async fetchAndParseData(): Promise<{
-    pizzeria: {
-      name: string;
-      phone: string;
-      url: string;
-      pizzasCategories: {
-        name: string;
-        pizzas: {
-          name: string;
-          imgUrl: string;
-          ingredients: { name: string }[];
-          prices: number[];
-        }[];
-      }[];
-    };
+    pizzeria: IPizzeriaNestedFkWithoutId;
   }> {
     const pages = await this.fetchPages();
 
@@ -62,12 +53,17 @@ export abstract class PizzasProvider {
     };
   }
 
-  private parsePagesAndMergePizzasCategories(pages: CheerioStatic[]) {
-    return pages.reduce((acc, page) => {
-      const { pizzasCategories } = this.parsePage(page);
+  private parsePagesAndMergePizzasCategories(
+    pages: CheerioStatic[]
+  ): IPizzaCategoryFkWithoutId[] {
+    return pages.reduce(
+      (acc, page) => {
+        const { pizzasCategories } = this.parsePage(page);
 
-      return [...acc, ...pizzasCategories];
-    }, []);
+        return [...acc, ...pizzasCategories];
+      },
+      [] as IPizzaCategoryFkWithoutId[]
+    );
   }
 
   private fetchPages(): Promise<CheerioStatic[]> {
@@ -96,40 +92,20 @@ export abstract class PizzasProvider {
   // and simply define the parsing methods `getPhone`, etc
   protected parsePage(
     $: CheerioStatic
-  ): {
-    pizzasCategories: {
-      name: string;
-      pizzas: {
-        name: string;
-        imgUrl: string;
-        ingredients: { name: string }[];
-        prices: number[];
-      }[];
-    }[];
-  } {
+  ): { pizzasCategories: IPizzaCategoryFkWithoutId[] } {
     const pizzasCategoriesWrapper = this.getPizzasCategoriesWrapper($);
 
     const pizzasCategories = pizzasCategoriesWrapper
       .toArray()
       .map(pizzaCategoryHtml => this.parsePizzaCategory($, pizzaCategoryHtml));
 
-    return {
-      pizzasCategories,
-    };
+    return { pizzasCategories };
   }
 
   private parsePizzaCategory(
     $: CheerioStatic,
     pizzaCategoryHtml: CheerioElement
-  ): {
-    name: string;
-    pizzas: {
-      name: string;
-      imgUrl: string;
-      ingredients: { name: string }[];
-      prices: number[];
-    }[];
-  } {
+  ): IPizzaCategoryFkWithoutId {
     const pizzaCategoryDom = $(pizzaCategoryHtml);
     const pizzaCategoryName = this.getPizzaCategoryName(pizzaCategoryDom);
 
@@ -147,12 +123,7 @@ export abstract class PizzasProvider {
   private parsePizza(
     $: CheerioStatic,
     pizzaHtml: CheerioElement
-  ): {
-    name: string;
-    imgUrl: string;
-    ingredients: { name: string }[];
-    prices: number[];
-  } {
+  ): IPizzaFkWithoutId {
     const pizzaDom = $(pizzaHtml);
 
     const pizzaName = this.getPizzaName(pizzaDom);
@@ -165,7 +136,7 @@ export abstract class PizzasProvider {
     };
   }
 
-  private getCleanedIngredients(pizzaDom: Cheerio) {
+  private getCleanedIngredients(pizzaDom: Cheerio): { name: string }[] {
     return (
       this.getPizzaIngredients(pizzaDom)
         // some pizzas do not have ingredients as they're already written in their title
@@ -192,7 +163,7 @@ export abstract class PizzasProvider {
   }
 
   // following methods are helpers to parse a page
-  abstract getPhone();
+  abstract getPhone(): string;
   abstract getPizzasCategoriesWrapper($: CheerioStatic): Cheerio;
   abstract getPizzaCategoryName(pizzaCategoryWrapper: Cheerio): string;
   abstract getPizzasWrappers(pizzaCategoryWrapper: Cheerio): Cheerio;
