@@ -19,7 +19,7 @@ export class OrmeauProvider extends PizzasProvider {
     return $('.entry-content .section');
   }
 
-  getPizzaCategory(pizzaCategoryWrapper: Cheerio): string {
+  getPizzaCategoryName(pizzaCategoryWrapper: Cheerio): string {
     return pizzaCategoryWrapper
       .find('.title')
       .children()

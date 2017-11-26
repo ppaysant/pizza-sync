@@ -107,27 +107,15 @@ export abstract class PizzasProvider {
       }[];
     }[];
   } {
-    const res = {
-      pizzasCategories: [] as {
-        name: string;
-        pizzas: {
-          name: string;
-          imgUrl: string;
-          ingredients: { name: string }[];
-          prices: number[];
-        }[];
-      }[],
+    const pizzasCategoriesWrapper = this.getPizzasCategoriesWrapper($);
+
+    const pizzasCategories = pizzasCategoriesWrapper
+      .toArray()
+      .map(pizzaCategoryHtml => this.parsePizzaCategory($, pizzaCategoryHtml));
+
+    return {
+      pizzasCategories,
     };
-
-    const pizzasCategories = this.getPizzasCategoriesWrapper($);
-
-    pizzasCategories.map((i, pizzaCategoryHtml) => {
-      const pizzaCategory = this.parsePizzaCategory($, pizzaCategoryHtml);
-
-      res.pizzasCategories.push(pizzaCategory);
-    });
-
-    return res;
   }
 
   private parsePizzaCategory(
@@ -143,23 +131,17 @@ export abstract class PizzasProvider {
     }[];
   } {
     const pizzaCategoryDom = $(pizzaCategoryHtml);
+    const pizzaCategoryName = this.getPizzaCategoryName(pizzaCategoryDom);
 
-    const pizzaCategory = this.getPizzaCategory(pizzaCategoryDom);
+    const pizzasDoms = this.getPizzasWrappers(pizzaCategoryDom);
+    const pizzas = pizzasDoms
+      .toArray()
+      .map(pizzaHtml => this.parsePizza($, pizzaHtml));
 
-    const finalPizzaCategory = {
-      name: pizzaCategory,
-      pizzas: [],
+    return {
+      name: pizzaCategoryName,
+      pizzas,
     };
-
-    const pizzasDom = this.getPizzasWrappers(pizzaCategoryDom);
-
-    pizzasDom.map((j, pizzaHtml) => {
-      const pizza = this.parsePizza($, pizzaHtml);
-
-      finalPizzaCategory.pizzas.push(pizza);
-    });
-
-    return finalPizzaCategory;
   }
 
   private parsePizza(
@@ -212,7 +194,7 @@ export abstract class PizzasProvider {
   // following methods are helpers to parse a page
   abstract getPhone();
   abstract getPizzasCategoriesWrapper($: CheerioStatic): Cheerio;
-  abstract getPizzaCategory(pizzaCategoryWrapper: Cheerio): string;
+  abstract getPizzaCategoryName(pizzaCategoryWrapper: Cheerio): string;
   abstract getPizzasWrappers(pizzaCategoryWrapper: Cheerio): Cheerio;
   abstract getPizzaName(pizzaWrapper: Cheerio): string;
   abstract getPizzaIngredients(pizzaWrapper: Cheerio): string[];
