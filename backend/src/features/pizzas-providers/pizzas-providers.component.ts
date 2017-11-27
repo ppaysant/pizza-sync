@@ -21,6 +21,7 @@ import {
   IPizzaWithId,
   IPizzasNormalized,
 } from '../models/pizzas/pizzas.interface';
+import { TuttiProvider } from './implementations/tutti.class';
 
 @Component()
 export class PizzasProvidersService {
@@ -33,7 +34,7 @@ export class PizzasProvidersService {
     private ingredientsService: IngredientsService
   ) {
     // list all the providers within the array
-    const providers = [OrmeauProvider];
+    const providers = [OrmeauProvider, TuttiProvider];
 
     this.providers = providers.map(PizzaProvider => new PizzaProvider());
   }

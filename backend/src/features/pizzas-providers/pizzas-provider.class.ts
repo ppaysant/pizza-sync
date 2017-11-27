@@ -130,7 +130,7 @@ export abstract class PizzasProvider {
 
     return {
       name: pizzaName,
-      imgUrl: this.getLocalOrDistantImage(pizzaName),
+      imgUrl: this.getLocalOrDistantImage(pizzaDom, pizzaName),
       ingredients: this.getCleanedIngredients(pizzaDom),
       prices: this.getPrices(pizzaDom, $),
     };
@@ -147,8 +147,8 @@ export abstract class PizzasProvider {
     );
   }
 
-  private getLocalOrDistantImage(pizzaName: string): string {
-    const imgLocalOrDistant = this.getPizzaImage();
+  private getLocalOrDistantImage(pizzaDom: Cheerio, pizzaName: string): string {
+    const imgLocalOrDistant = this.getPizzaImage(pizzaDom);
 
     const localFolderName = imgLocalOrDistant[`localFolderName`];
     const distantUrl = imgLocalOrDistant[`distantUrl`];
