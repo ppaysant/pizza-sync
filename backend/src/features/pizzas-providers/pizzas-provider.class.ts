@@ -10,25 +10,21 @@ import {
 import { requestOptions } from '../../helpers/http.helper';
 import { getPathImgPizza } from '../../helpers/file.helper';
 
-export abstract class PizzasProvider {
-  //  used to display in lists
-  abstract longCompanyName: string;
-
+export abstract class BasicPizzasProvider {
   //  used to write in console autocomplete
   abstract shortCompanyName: string;
 
+  //  used to display in lists
+  abstract longCompanyName: string;
+
   protected abstract phone: string;
+
   // the URL of the website in case a user wants to visit it
   protected abstract url: string;
-  private imgsBaseFolder = `${
-    __dirname
-  }/../../../../frontend/src/assets/img/pizzas-providers`;
 
-  // the URLs of the differents pages to parse the pizzas
-  // most pizzas website only have one but some of them have many
-  protected abstract urlsPizzasPages: string[];
-
-  constructor() {}
+  abstract async fetchAndParseData(): Promise<{
+    pizzeria: IPizzeriaNestedFkWithoutId;
+  }>;
 
   getPizzeriaInformation(): IPizzeriaNestedCommonWithoutId {
     return {
@@ -37,6 +33,37 @@ export abstract class PizzasProvider {
       url: this.url,
     };
   }
+}
+
+export abstract class PizzaProviderMock extends BasicPizzasProvider {
+  private pizzeriaMock: IPizzeriaNestedFkWithoutId;
+  // no need for mocks to define this properties
+  // has it'll be found from the mock object
+  longCompanyName = '';
+  phone = '';
+  url = '';
+
+  constructor(pizzeriaMock: IPizzeriaNestedFkWithoutId) {
+    super();
+    this.pizzeriaMock = pizzeriaMock;
+    this.longCompanyName = this.pizzeriaMock.name;
+    this.phone = this.pizzeriaMock.phone;
+    this.url = this.pizzeriaMock.url;
+  }
+
+  async fetchAndParseData() {
+    return await Promise.resolve({ pizzeria: this.pizzeriaMock });
+  }
+}
+
+export abstract class PizzasProvider extends BasicPizzasProvider {
+  private imgsBaseFolder = `${
+    __dirname
+  }/../../../../frontend/src/assets/img/pizzas-providers`;
+
+  // the URLs of the differents pages to parse the pizzas
+  // most pizzas website only have one but some of them have many
+  protected abstract urlsPizzasPages: string[];
 
   async fetchAndParseData(): Promise<{
     pizzeria: IPizzeriaNestedFkWithoutId;

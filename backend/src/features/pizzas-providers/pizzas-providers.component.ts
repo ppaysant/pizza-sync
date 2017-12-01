@@ -2,8 +2,10 @@ import { Component } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { normalize, schema } from 'normalizr';
 
-import { PizzasProvider } from './pizzas-provider.class';
+import { PizzasProvider, BasicPizzasProvider } from './pizzas-provider.class';
 import { OrmeauProvider } from './implementations/ormeau.class';
+import { OrmeauMockProvider } from './implementations/ormeau.mock';
+import { TuttiProvider } from './implementations/tutti.class';
 import { PizzasService } from '../models/pizzas/pizzas.component';
 import { PizzasCategoriesService } from '../models/pizzas-categories/pizzas-categories.component';
 import { IngredientsService } from '../models/ingredients/ingredients.component';
@@ -21,12 +23,11 @@ import {
   IPizzaWithId,
   IPizzasNormalized,
 } from '../models/pizzas/pizzas.interface';
-import { TuttiProvider } from './implementations/tutti.class';
 
 @Component()
 export class PizzasProvidersService {
-  private providers: PizzasProvider[];
-  private currentProvider: PizzasProvider;
+  private providers: BasicPizzasProvider[];
+  private currentProvider: BasicPizzasProvider;
 
   constructor(
     private pizzasService: PizzasService,
@@ -34,12 +35,12 @@ export class PizzasProvidersService {
     private ingredientsService: IngredientsService
   ) {
     // list all the providers within the array
-    const providers = [OrmeauProvider, TuttiProvider];
+    const providers = [OrmeauMockProvider, OrmeauProvider, TuttiProvider];
 
     this.providers = providers.map(PizzaProvider => new PizzaProvider());
   }
 
-  getProviders(): PizzasProvider[] {
+  getProviders(): BasicPizzasProvider[] {
     return this.providers;
   }
 
@@ -62,8 +63,16 @@ export class PizzasProvidersService {
     return this.setCurrentProvider(firstProvider);
   }
 
-  async setCurrentProvider(provider: PizzasProvider): Promise<void> {
+  async setCurrentProvider(provider: BasicPizzasProvider): Promise<void> {
     const pizzaProviderInfo = await provider.fetchAndParseData();
+
+    // after you've implemented the parsing of a given pizza provider
+    // if you want to easily create a mock, you can
+    // - log the `pizzaProviderInfo`
+    // - copy the result from the console into a new file in `/backend/mocks/new-pizza-provider.mock.ts`
+    // - create a new pizza provider mock in `/backend/src/features/pizzas-providers/implementations/new-pizza-provider.mock.ts`
+    // - add it to the list of providers within the constructor of this file
+    // console.log(JSON.stringify(pizzaProviderInfo));
 
     // add IDs and normalize data
     const pizzaProviderInfoWithIds = this.addIdToPizzasCategoriesPizzasAndIngredients(
@@ -85,11 +94,13 @@ export class PizzasProvidersService {
     this.currentProvider = provider;
   }
 
-  getCurrentProvider(): PizzasProvider {
+  getCurrentProvider(): BasicPizzasProvider {
     return this.currentProvider;
   }
 
-  getProviderInstanceByName(providerShortCompanyName: string): PizzasProvider {
+  getProviderInstanceByName(
+    providerShortCompanyName: string
+  ): BasicPizzasProvider {
     return this.providers.find(
       provider => provider.shortCompanyName === providerShortCompanyName
     );
